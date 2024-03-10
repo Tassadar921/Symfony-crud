@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block additionnalHeaders %}
+    <style>
+        .project-header, .project {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        .project-header {
+            background-color: rgba(0, 0, 0, 0.30);
+            color: #fff;
+            font-weight: bold;
+        }
+        .project {
+            border: 1px solid rgba(0, 0, 0, 0.6);
+            margin-top: 20px;
+        }
+        .project > div, .project-header > div {
+            flex-basis: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        img {
+            width: 100px;
+            height: 100px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Projets</h1>
+    <div class="project-header">
+        <div></div>
+        <div><h3>Nom</h3></div>
+        <div><h3>Description</h3></div>
+        <div><h3>Technos</h3></div>
+        <div><h3>Date de début</h3></div>
+        <div><h3>Date de fin</h3></div>
+        {% if is_granted('ROLE_ADMIN') %}
+            <div><h3>Actions</h3></div>
+        {% endif %}
+    </div>
+    {% for project in projects %}
+        <div class="project">
+            <div><img src="{{ asset('uploads/' ~ project.picture) }}" alt="{{ project.name }}"></div>
+            <div><h2>{{ project.name }}</h2></div>
+            <div><p>{{ project.description|raw }}</p></div>
+            <div class="technos">
+                <ul>
+                    {% for techno in project.technos %}
+                        <li>- {{ techno }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div><p>{{ project.startDate|date('d/m/Y') }}</p></div>
+            <div>
+                {% if project.endDate is not null %}
+                    <p>{{ project.endDate|date('d/m/Y') }}</p>
+                {% endif %}
+            </div>
+            {% if is_granted('ROLE_ADMIN') %}
+                <div>
+                    <a href="{{ path('admin', {
+                        'crudAction': 'edit',
+                        'entityId': project.id
+                    }) }}">Edit</a>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endblock %}
